@@ -13,7 +13,7 @@ version = '0.3.0'
 def buildNumber = System.getenv("BUILD_NUMBER")
 version = version + "+" + (buildNumber ? "build.$buildNumber" : "local")
 
-group = 'net.fabricmc'
+group = 'org.quiltmc'
 archivesBaseName = 'tiny-mappings-parser'
 
 license {
@@ -30,8 +30,12 @@ sourceSets {
 repositories {
 	mavenCentral()
 	maven {
-		name = 'Fabric'
-		url = 'http://maven.modmuss50.me/'
+		name = 'Sponge'
+		url = 'https://repo.spongepowered.org/repository/maven-snapshots/' // For 0.8.3-SNAPSHOT
+	}
+
+	maven {
+		url = "https://maven.quiltmc.org/repository/release/"
 	}
 }
 
@@ -43,7 +47,9 @@ dependencies {
 	asmImplementation 'org.ow2.asm:asm-commons:8.0'
 	asmImplementation 'org.ow2.asm:asm-tree:8.0'
 	asmImplementation 'org.ow2.asm:asm-util:8.0'
-	mixinImplementation('net.fabricmc:sponge-mixin:0.7.11.17') {
+
+	// The mixin remapper implementation is unchanged from fabric's fork, so we can use upstream here
+	mixinImplementation('org.spongepowered:mixin:0.8.3-SNAPSHOT') {
 		transitive = false
 	}
 
@@ -132,12 +138,14 @@ publishing {
 	}
 
 	repositories {
-		if (project.hasProperty('mavenPass')) {
+		def ENV = System.getenv()
+
+		if (ENV.MAVEN_URL) {
 			maven {
-				url = "http://mavenupload.modmuss50.me/"
+				url ENV.MAVEN_URL
 				credentials {
-					username = "buildslave"
-					password = project.getProperty('mavenPass')
+					username ENV.MAVEN_USERNAME
+					password ENV.MAVEN_PASSWORD
 				}
 			}
 		}
