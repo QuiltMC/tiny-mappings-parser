@@ -10,8 +10,7 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 version = '0.3.0'
 
-def buildNumber = System.getenv("BUILD_NUMBER")
-version = version + "+" + (buildNumber ? "build.$buildNumber" : "local")
+version = version + (System.getenv("GITHUB_ACTIONS") ? "" : "+local")
 
 group = 'org.quiltmc'
 archivesBaseName = 'tiny-mappings-parser'
